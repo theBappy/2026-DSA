@@ -1,18 +1,20 @@
 class Solution:
-    def areSimilar(self, mat, k):
-        m, n = len(mat), len(mat[0])
-        
-        k %= n  # (reduce k<n)
-        
+    def areSimilar(self, mat: List[List[int]], k: int) -> bool:
+        m = len(mat)
+        n = len(mat[0])
+        k = k % n
+
+        if k == 0:
+            return True
+
         for i in range(m):
             for j in range(n):
+                currIdx = j
                 if i % 2 == 0:
-                    # even row , left shift
-                    if mat[i][j] != mat[i][(j + k) % n]:
-                        return False
+                    finalIdx = (j + k) % n
                 else:
-                    # odd row , right shift
-                    if mat[i][j] != mat[i][(j - k) % n]:
-                        return False
-        
+                    finalIdx = (j - k + n) % n
+
+                if mat[i][currIdx] != mat[i][finalIdx]:
+                    return False
         return True
