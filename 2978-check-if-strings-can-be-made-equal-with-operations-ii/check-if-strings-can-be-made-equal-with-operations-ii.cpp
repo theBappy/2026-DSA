@@ -13,7 +13,6 @@ public:
                 odd[s2[i] - 'a']--;
             }
         }
-
         for (int i = 0; i < 26; i++) {
             if (even[i] != 0 || odd[i] != 0) {
                 return false;
