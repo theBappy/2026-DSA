@@ -18,12 +18,9 @@ class Solution:
             for i in range(m):
                 curr = idx[i]
 
-                prev_idx = idx[(i - 1 + m) % m]
-                next_idx = idx[(i + 1) % m]
+                prev_idx_distance = min(abs(curr - idx[(i - 1 + m) % m]), n - abs(curr - idx[(i - 1 + m) % m]))
 
-                prev_idx_distance = min(abs(curr - prev_idx), n - abs(curr - prev_idx))
-
-                next_idx_distance = min(abs(curr - next_idx), n - abs(curr - next_idx))
+                next_idx_distance = min(abs(curr - idx[(i + 1) % m]), n - abs(curr - idx[(i + 1) % m]))
 
                 ans[curr] = min(prev_idx_distance, next_idx_distance)
 
