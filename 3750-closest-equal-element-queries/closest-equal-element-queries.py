@@ -21,11 +21,9 @@ class Solution:
                 prev_idx = idx[(i - 1 + m) % m]
                 next_idx = idx[(i + 1) % m]
 
-                prev_idx_distance = abs(curr - prev_idx)
-                prev_idx_distance = min(prev_idx_distance, n - prev_idx_distance)
+                prev_idx_distance = min(abs(curr - prev_idx), n - abs(curr - prev_idx))
 
-                next_idx_distance = abs(curr - next_idx)
-                next_idx_distance = min(next_idx_distance, n - next_idx_distance)
+                next_idx_distance = min(abs(curr - next_idx), n - abs(curr - next_idx))
 
                 ans[curr] = min(prev_idx_distance, next_idx_distance)
 
