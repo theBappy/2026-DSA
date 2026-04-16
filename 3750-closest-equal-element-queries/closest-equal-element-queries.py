@@ -16,11 +16,6 @@ class Solution:
             if m == 1:
                 continue
             for i in range(m):
-
-                prev_idx_distance = min(abs(idx[i] - idx[(i - 1 + m) % m]), n - abs(idx[i] - idx[(i - 1 + m) % m]))
-
-                next_idx_distance = min(abs(idx[i] - idx[(i + 1) % m]), n - abs(idx[i] - idx[(i + 1) % m]))
-
-                ans[idx[i]] = min(prev_idx_distance, next_idx_distance)
+                ans[idx[i]] = min(min(abs(idx[i] - idx[(i - 1 + m) % m]), n - abs(idx[i] - idx[(i - 1 + m) % m])), min(abs(idx[i] - idx[(i + 1) % m]), n - abs(idx[i] - idx[(i + 1) % m])))
 
         return [ans[idx] for idx in queries]
