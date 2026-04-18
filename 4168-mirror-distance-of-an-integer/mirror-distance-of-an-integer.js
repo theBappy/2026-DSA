@@ -1,12 +1,5 @@
-
 var mirrorDistance = function (n) {
-    const getReverse = () => {
-        let rev = 0;
-        while (n > 0) {
-            rev = rev * 10 + n % 10
-            n = Math.floor(n / 10)
-        }
-        return rev
-    }
-    return Math.abs(n - getReverse(n))
+    const s = n.toString().split('').reverse().join('')
+    const rev = parseInt(s, 10)
+    return Math.abs(n - rev)
 };
