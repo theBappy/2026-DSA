@@ -1,49 +1,47 @@
-from collections import defaultdict
+from collections import defaultdict, Counter
+
 
 class Solution:
-    def minimumHammingDistance(self, source: list[int], target: list[int], allowedSwaps: list[list[int]]) -> int:
+    def minimumHammingDistance(
+        self, source: List[int], target: List[int], allowedSwaps: List[List[int]]
+    ) -> int:
         n = len(source)
         parent = list(range(n))
         rank = [0] * n
 
-        def find(x):
-            if parent[x] != x:
-                parent[x] = find(parent[x])
-            return parent[x]
+        def find(i):
+            if parent[i] == i:
+                return i
+            parent[i] = find(parent[i])
+            return parent[i]
 
         def union(x, y):
-            px, py = find(x), find(y)
-            if px == py:
-                return
-            if rank[px] > rank[py]:
-                parent[py] = px
-            elif rank[px] < rank[py]:
-                parent[px] = py
-            else:
-                parent[px] = py
-                rank[py] += 1
+            root_x = find(x)
+            root_y = find(y)
 
-        # 1. Build the connected components
+            if root_x != root_y:
+                if rank[root_x] < rank[root_y]:
+                    parent[root_x] = root_y
+                elif rank[root_x] > rank[root_y]:
+                    parent[root_y] = root_x
+                else:
+                    parent[root_x] = root_y
+                    rank[root_y] += 1
+
+        # Build connected components using Union by Rank
         for u, v in allowedSwaps:
             union(u, v)
 
-        # 2. Group source values by their component root
-        # root -> { value: count }
-        inventories = defaultdict(lambda: defaultdict(int))
+        components = defaultdict(Counter)
+        for i in range(n):
+            components[find(i)][source[i]] += 1
+
+        hamming_dist = 0
         for i in range(n):
             root = find(i)
-            inventories[root][source[i]] += 1
-
-        hamming_distance = 0
-
-        # 3. Check if target[i] can be satisfied by its component's inventory
-        for i in range(n):
-            root = find(i)
-            target_val = target[i]
-            
-            if inventories[root][target_val] > 0:
-                inventories[root][target_val] -= 1
+            if components[root][target[i]] > 0:
+                components[root][target[i]] -= 1
             else:
-                hamming_distance += 1
+                hamming_dist += 1
 
-        return hamming_distance
+        return hamming_dist
