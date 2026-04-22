@@ -7,6 +7,8 @@ class Solution:
                 for i in range(len(query)):
                     if query[i] != word[i]:
                         hamming_dist += 1
+                    if hamming_dist > 2:
+                        break
                 if hamming_dist <= 2:
                     res.append(query)
                     break
