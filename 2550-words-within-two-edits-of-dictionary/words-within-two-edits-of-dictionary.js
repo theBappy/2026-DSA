@@ -7,6 +7,9 @@ var twoEditWords = function (queries, dictionary) {
                 if (query[i] !== word[i]) {
                     hamming_dist++;
                 }
+                if(hamming_dist > 2){
+                    break;
+                }
             }
             if (hamming_dist <= 2) {
                 res.push(query);
