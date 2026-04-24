@@ -1,15 +1,12 @@
-/**
- * @param {string} moves
- * @return {number}
- */
+
 var furthestDistanceFromOrigin = function (moves) {
-    let leftCount = 0
-    let rightCount = 0
-    let spacesCount = 0
-    for (const ch of moves) {
-        if (ch === 'L') leftCount++
-        if (ch === 'R') rightCount++
-        if (ch === '_') spacesCount++
+    let leftMove = 0
+    let rightMove = 0
+    let spacedMove = 0
+    for (const move of moves) {
+        if (move === 'L') leftMove++
+        if (move === 'R') rightMove++
+        if (move === '_') spacedMove++
     }
-    return Math.abs(leftCount - rightCount) + spacesCount
+    return Math.abs(leftMove - rightMove) + spacedMove
 };
