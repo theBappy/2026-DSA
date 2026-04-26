@@ -1,51 +1,50 @@
 class Solution {
 public:
-    bool containsCycle(vector<vector<char>>& grid) {
-        int m = grid.size();
-        int n = grid[0].size();
-        vector<int> parent(m * n);
-        vector<int> rank(m * n, 0);
+    int m, n;
+    vector<vector<int>> directions = {{1, 0}, {-1, 0}, {0, -1}, {0, 1}};
 
-        // initialize parent array
-        iota(parent.begin(), parent.end(), 0);
+    bool BFS(int r, int c, vector<vector<char>>& grid,
+                             vector<vector<bool>>& visited) {
+        // r, c, prev_r, prev_c
+        queue<tuple<int, int, int, int>> que;
+        que.push({r, c, -1, -1});
+        visited[r][c] = true;
 
-        // lambda for path compression
-        auto find = [&](auto& self, int i) -> int {
-            if (parent[i] == i)
-                return i;
-            return parent[i] = self(self, parent[i]);
-        };
+        while (!que.empty()) {
+            auto [curr_r, curr_c, prev_r, prev_c] = que.front();
+            que.pop();
 
-        for (int r = 0; r < m; ++r) {
-            for (int c = 0; c < n; ++c) {
-                // checking right and down
-                int neighbors[2][2] = {{r, c + 1}, {r + 1, c}};
-                for (auto& neighbor : neighbors) {
-                    int nr = neighbor[0], nc = neighbor[1];
-
-                    if (nr < m && nc < n && grid[r][c] == grid[nr][nc]) {
-                        int u = r * n + c;
-                        int v = nr * n + nc;
-
-                        int rootU = find(find, u);
-                        int rootV = find(find, v);
-
-                        if (rootU == rootV)
-                            return true;
-
-                        // union by rank
-                        if (rank[rootU] > rank[rootV])
-                            parent[rootV] = rootU;
-                        else if (rank[rootU] < rank[rootV])
-                            parent[rootU] = rootV;
-                        else {
-                            parent[rootU] = rootV;
-                            rank[rootV]++;
-                        }
-                    }
+            for (auto& dir : directions) {
+                int new_r = curr_r + dir[0];
+                int new_c = curr_c + dir[1];
+                if (new_r >= 0 && new_r < m && new_c >= 0 && new_c < n &&
+                    grid[new_r][new_c] == grid[curr_r][curr_c]) {
+                    if (new_r == prev_r && new_c == prev_c)
+                        continue;
+                    if (visited[new_r][new_c])
+                        return true;
+                    visited[new_r][new_c] = true;
+                    que.push({new_r, new_c, curr_r, curr_c});
                 }
             }
         }
+        return false;
+    }
+    bool containsCycle(vector<vector<char>>& grid) {
+        m = grid.size();
+        n = grid[0].size();
+
+        vector<vector<bool>> visited(m, vector<bool>(n, false));
+
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                if (!visited[i][j] &&
+                    BFS(i, j, grid, visited)) {
+                    return true;
+                }
+            }
+        }
+
         return false;
     }
 };
