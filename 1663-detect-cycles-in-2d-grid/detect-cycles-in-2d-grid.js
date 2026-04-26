@@ -1,44 +1,35 @@
-var containsCycle = function (grid) {
+function containsCycle(grid) {
+    if (!grid || grid.length === 0) return false;
+
     const m = grid.length;
     const n = grid[0].length;
-    const parent = new Int32Array(m * n);
-    const rank = new Int32Array(m * n).fill(0);
+    const visited = Array.from({ length: m }, () => Array(n).fill(false));
+    const directions = [[1, 0], [-1, 0], [0, -1], [0, 1]];
 
-    // Initialize parent array
-    for (let i = 0; i < m * n; i++) parent[i] = i;
+    function dfs(r, c, prevR, prevC) {
+        visited[r][c] = true;
 
-    const find = (i) => {
-        if (parent[i] === i) return i;
-        parent[i] = find(parent[i]); // path compression
-        return parent[i];
-    };
+        for (const [dr, dc] of directions) {
+            const nr = r + dr;
+            const nc = c + dc;
 
-    for (let r = 0; r < m; r++) {
-        for (let c = 0; c < n; c++) {
-            const directions = [[r, c + 1], [r + 1, c]];
+            if (nr >= 0 && nr < m && nc >= 0 && nc < n && grid[nr][nc] === grid[r][c]) {
+                if (nr === prevR && nc === prevC) continue;
 
-            for (const [nr, nc] of directions) {
-                if (nr < m && nc < n && grid[r][c] === grid[nr][nc]) {
-                    const u = r * n + c;
-                    const v = nr * n + nc;
+                if (visited[nr][nc]) return true;
 
-                    const rootU = find(u);
-                    const rootV = find(v);
+                if (dfs(nr, nc, r, c)) return true;
+            }
+        }
+        return false;
+    }
 
-                    if (rootU === rootV) return true;
-
-                    // Union by rank
-                    if (rank[rootU] > rank[rootV]) {
-                        parent[rootV] = rootU;
-                    } else if (rank[rootU] < rank[rootV]) {
-                        parent[rootU] = rootV;
-                    } else {
-                        parent[rootU] = rootV;
-                        rank[rootV]++;
-                    }
-                }
+    for (let i = 0; i < m; i++) {
+        for (let j = 0; j < n; j++) {
+            if (!visited[i][j]) {
+                if (dfs(i, j, -1, -1)) return true;
             }
         }
     }
     return false;
-};
+}
