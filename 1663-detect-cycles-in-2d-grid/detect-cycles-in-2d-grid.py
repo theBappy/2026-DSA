@@ -1,3 +1,6 @@
+from collections import deque
+
+
 class Solution:
     def containsCycle(self, grid: List[List[str]]) -> bool:
         if not grid or not grid[0]:
@@ -6,28 +9,35 @@ class Solution:
         visited = [[False for _ in range(n)] for _ in range(m)]
         directions = [(0, 1), (0, -1), (1, 0), (-1, 0)]
 
-        def dfs(r, c, prev_r, prev_c):
-            visited[r][c] = True
+        def bfs(start_r, start_c):
+                # queue stores: (curr_r, curr_c, prev_r, prev_c)
+                queue = deque([(start_r, start_c, -1, -1)])
+                visited[start_r][start_c] = True
 
-            for dr, dc in directions:
-                nr, nc = r + dr, c + dc
+                while queue:
+                    r, c, prev_r, prev_c = queue.popleft()
 
-                if 0 <= nr < m and 0 <= nc < n and grid[nr][nc] == grid[r][c]:
-                    # if neighbor is the one we just came from, skip it
-                    if nr == prev_r and nc == prev_c:
-                        continue
-                    # if visited, we found a cycle
-                    if visited[nr][nc]:
-                        return True
+                    for dr, dc in directions:
+                        nr, nc = r + dr, c + dc
 
-                    # recurse
-                    if dfs(nr, nc, r, c):
-                        return True
-            return False
+                        # Check boundaries and if the character matches
+                        if 0 <= nr < m and 0 <= nc < n and grid[nr][nc] == grid[start_r][start_c]:
+                            # If this neighbor is where we just came from, ignore it
+                            if nr == prev_r and nc == prev_c:
+                                continue
+                            
+                            # If we encounter a visited node that isn't the parent, a cycle exists
+                            if visited[nr][nc]:
+                                return True
+                            
+                            visited[nr][nc] = True
+                            queue.append((nr, nc, r, c))
+                
+                return False
 
         for i in range(m):
             for j in range(n):
                 if not visited[i][j]:
-                    if dfs(i, j, -1, -1):
+                    if bfs(i, j):
                         return True
         return False
