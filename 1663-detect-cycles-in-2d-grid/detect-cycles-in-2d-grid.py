@@ -1,36 +1,33 @@
 class Solution:
-    def containsCycle(self, grid: list[list[str]]) -> bool:
+    def containsCycle(self, grid: List[List[str]]) -> bool:
+        if not grid or not grid[0]:
+            return False
         m, n = len(grid), len(grid[0])
-        parent = list(range(m * n))
-        rank = [0] * (m * n)
+        visited = [[False for _ in range(n)] for _ in range(m)]
+        directions = [(0, 1), (0, -1), (1, 0), (-1, 0)]
 
-        def find(i):
-            if parent[i] == i:
-                return i
-            parent[i] = find(parent[i]) # path compression
-            return parent[i]
+        def dfs(r, c, prev_r, prev_c):
+            visited[r][c] = True
 
-        for r in range(m):
-            for c in range(n):
-                # we only look right and down to process each potential edge once
-                for nr, nc in [(r, c + 1), (r + 1, c)]:
-                    if nr < m and nc < n and grid[r][c] == grid[nr][nc]:
-                        u = r * n + c
-                        v = nr * n + nc
-                        
-                        root_u = find(u)
-                        root_v = find(v)
+            for dr, dc in directions:
+                nr, nc = r + dr, c + dc
 
-                        if root_u == root_v:
-                            return True  # cycle detected: u and v already connected
-                        
-                        # union by rank
-                        if rank[root_u] > rank[root_v]:
-                            parent[root_v] = root_u
-                        elif rank[root_u] < rank[root_v]:
-                            parent[root_u] = root_v
-                        else:
-                            parent[root_u] = root_v
-                            rank[root_v] += 1
-                            
+                if 0 <= nr < m and 0 <= nc < n and grid[nr][nc] == grid[r][c]:
+                    # if neighbor is the one we just came from, skip it
+                    if nr == prev_r and nc == prev_c:
+                        continue
+                    # if visited, we found a cycle
+                    if visited[nr][nc]:
+                        return True
+
+                    # recurse
+                    if dfs(nr, nc, r, c):
+                        return True
+            return False
+
+        for i in range(m):
+            for j in range(n):
+                if not visited[i][j]:
+                    if dfs(i, j, -1, -1):
+                        return True
         return False
