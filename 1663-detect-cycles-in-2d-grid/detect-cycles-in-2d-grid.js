@@ -1,8 +1,8 @@
 var containsCycle = function (grid) {
     const m = grid.length;
     const n = grid[0].length;
-    const parent = new Array(m * n);
-    const rank = new Array(m * n).fill(0);
+    const parent = new Int32Array(m * n);
+    const rank = new Int32Array(m * n).fill(0);
 
     // Initialize parent array
     for (let i = 0; i < m * n; i++) parent[i] = i;
