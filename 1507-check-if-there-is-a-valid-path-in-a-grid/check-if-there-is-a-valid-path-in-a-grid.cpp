@@ -1,46 +1,38 @@
 class Solution {
 public:
+    vector<int> parent, rank;
+    int find(int i) {
+        if (parent[i] == i) return i;
+        return parent[i] = find(parent[i]);
+    }
+
+    void unite(int i, int j) {
+        int root_i = find(i), root_j = find(j);
+        if (root_i != root_j) {
+            if (rank[root_i] < rank[root_j]) parent[root_i] = root_j;
+            else if (rank[root_i] > rank[root_j]) parent[root_j] = root_i;
+            else { parent[root_i] = root_j; rank[root_j]++; }
+        }
+    }
+
     bool hasValidPath(vector<vector<int>>& grid) {
         int m = grid.size(), n = grid[0].size();
-
-        vector<vector<vector<int>>> dirs = {{},
-                                            {{0, -1}, {0, 1}},
-                                            {{-1, 0}, {1, 0}},
-                                            {{0, -1}, {1, 0}},
-                                            {{0, 1}, {1, 0}},
-                                            {{0, -1}, {-1, 0}},
-                                            {{0, 1}, {-1, 0}}};
-
-        queue<pair<int, int>> q;
-        vector<vector<bool>> visited(m, vector<bool>(n, false));
-
-        q.push({0, 0});
-        visited[0][0] = true;
-
-        while (!q.empty()) {
-            auto [r, c] = q.front();
-            q.pop();
-
-            if (r == m - 1 && c == n - 1)
-                return true;
-
-            for (auto& dir : dirs[grid[r][c]]) {
-                int nr = r + dir[0];
-                int nc = c + dir[1];
-
-                if (nr < 0 || nc < 0 || nr >= m || nc >= n || visited[nr][nc])
-                    continue;
-
-                for (auto& reverse_path : dirs[grid[nr][nc]]) {
-                    if (nr + reverse_path[0] == r &&
-                        nc + reverse_path[1] == c) {
-                        visited[nr][nc] = true;
-                        q.push({nr, nc});
-                    }
-                }
-            }
+        for (int i = 0; i < m * n; ++i) {
+            parent.push_back(i);
+            rank.push_back(0);
         }
 
-        return false;
+        for (int r = 0; r < m; ++r) {
+            for (int c = 0; c < n; ++c) {
+                int curr = r * n + c;
+                if (c + 1 < n && (grid[r][c]==1||grid[r][c]==4||grid[r][c]==6) && 
+                   (grid[r][c+1]==1||grid[r][c+1]==3||grid[r][c+1]==5))
+                    unite(curr, curr + 1);
+                if (r + 1 < m && (grid[r][c]==2||grid[r][c]==3||grid[r][c]==4) && 
+                   (grid[r+1][c]==2||grid[r+1][c]==5||grid[r+1][c]==6))
+                    unite(curr, curr + n);
+            }
+        }
+        return find(0) == find(m * n - 1);
     }
 };
