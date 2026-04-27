@@ -1,35 +1,40 @@
 class Solution:
-    def __init__(self):
-        self.m = 0
-        self.n = 0
-        self.directions = {
-            1: [[0, -1], [0, 1]],
-            2: [[-1, 0], [1, 0]],
-            3: [[0, -1], [1, 0]],
-            4: [[0, 1], [1, 0]],
-            5: [[0, -1], [-1, 0]],
-            6: [[-1, 0], [0, 1]]
-        }
-
-    def dfs(self, grid: List[List[int]], i: int, j: int, visited: List[List[bool]]) -> bool:
-        if i == self.m - 1 and j == self.n - 1:
-            return True
-        visited[i][j] = True
-        for dir in self.directions[grid[i][j]]:
-            new_i = i + dir[0]
-            new_j = j + dir[1]
-
-            if new_i < 0 or new_i >= self.m or new_j < 0 or new_j >= self.n or visited[new_i][new_j]:
-                continue
-
-            for backDir in self.directions[grid[new_i][new_j]]:
-                if new_i + backDir[0] == i and new_j + backDir[1] == j:
-                    if self.dfs(grid, new_i, new_j, visited):
-                        return True
-        return False
-
     def hasValidPath(self, grid: List[List[int]]) -> bool:
-        self.m = len(grid)
-        self.n = len(grid[0])
-        visited = [[False] * self.n for _ in range(self.m)]
-        return self.dfs(grid, 0, 0, visited)
+        m, n = len(grid), len(grid[0])
+        parent = list(range(m * n))
+        rank = [0] * (m * n)
+
+        def find(i):
+            if parent[i] != i:
+                parent[i] = find(parent[i])
+            return parent[i]
+
+        def union(i, j):
+            root_i, root_j = find(i), find(j)
+            if root_i != root_j:
+                if rank[root_i] < rank[root_j]:
+                    parent[root_i] = root_j
+                elif rank[root_i] > rank[root_j]:
+                    parent[root_j] = root_i
+                else:
+                    parent[root_i] = root_j
+                    rank[root_j] += 1
+
+        for r in range(m):
+            for c in range(n):
+                idx = r * n + c
+                # check right
+                if (
+                    c + 1 < n
+                    and grid[r][c] in {1, 4, 6}
+                    and grid[r][c + 1] in {1, 3, 5}
+                ):
+                    union(idx, idx + 1)
+                # check down
+                if (
+                    r + 1 < m
+                    and grid[r][c] in {2, 3, 4}
+                    and grid[r + 1][c] in {2, 5, 6}
+                ):
+                    union(idx, idx + n)
+        return find(0) == find(m * n - 1)
