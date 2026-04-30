@@ -1,42 +1,34 @@
-var maxPathScore = function (grid, k) {
+var maxPathScore = function(grid, k) {
     const m = grid.length;
     const n = grid[0].length;
-
-    const t = Array.from({ length: m }, () =>
-        Array.from({ length: n }, () =>
-            Array(k + 1).fill(-1)
-        )
+    
+    // Initialize 3D array
+    const t = Array.from({ length: m }, () => 
+        Array.from({ length: n }, () => Array(k + 1).fill(-1))
     );
 
-    const dpOnGrid = (i, j, currentCost) => {
-        // Bounds check
-        if (i >= m || j >= n) return Number.MIN_SAFE_INTEGER;
+    for (let i = m - 1; i >= 0; i--) {
+        for (let j = n - 1; j >= 0; j--) {
+            const isPos = grid[i][j] > 0 ? 1 : 0;
+            for (let cost = k; cost >= 0; cost--) {
+                const newCost = cost + isPos;
 
-        // Update cost based on current cell
-        let newCost = currentCost + (grid[i][j] > 0 ? 1 : 0);
-        
-        // If we exceed k, this path is invalid
-        if (newCost > k) return Number.MIN_SAFE_INTEGER;
+                if (newCost > k) continue;
 
-        // Check memo with the UPDATED cost
-        if (t[i][j][newCost] !== -1) return t[i][j][newCost];
+                if (i === m - 1 && j === n - 1) {
+                    t[i][j][cost] = grid[i][j];
+                } else {
+                    const down = i + 1 < m ? t[i + 1][j][newCost] : -1;
+                    const right = j + 1 < n ? t[i][j + 1][newCost] : -1;
+                    const bestNext = Math.max(down, right);
 
-        // Base case: Reach the bottom-right
-        if (i === m - 1 && j === n - 1) return grid[i][j];
-
-        let down = dpOnGrid(i + 1, j, newCost);
-        let right = dpOnGrid(i, j + 1, newCost);
-
-        let bestNext = Math.max(down, right);
-        
-        // If both paths lead to dead ends
-        if (bestNext === Number.MIN_SAFE_INTEGER) {
-            return t[i][j][newCost] = Number.MIN_SAFE_INTEGER;
+                    if (bestNext !== -1) {
+                        t[i][j][cost] = grid[i][j] + bestNext;
+                    }
+                }
+            }
         }
+    }
 
-        return t[i][j][newCost] = grid[i][j] + bestNext;
-    };
-
-    const result = dpOnGrid(0, 0, 0);
-    return result <= Number.MIN_SAFE_INTEGER ? -1 : result;
+    return t[0][0][0];
 };
