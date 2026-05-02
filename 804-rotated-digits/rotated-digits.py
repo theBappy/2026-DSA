@@ -1,35 +1,30 @@
 class Solution:
     def rotatedDigits(self, n: int) -> int:
-        s = str(n)
-        memo = {}
+        memo_arr = [-1] * (n + 1)
+        memo_arr[0] = 0
+        count = 0
 
-        def dp(idx, is_less, has_changed):
-            state = (idx, is_less, has_changed)
-            if state in memo:
-                return memo[state]
+        for i in range(1, n + 1):
+            remaining_part = memo_arr[i // 10]
+            if remaining_part == 2:
+                memo_arr[i] = 2
+                continue
 
-            # base case - we've filled all digits positions
-            if idx == len(s):
-                return 1 if has_changed else 0
+            digit = i % 10
+            if digit in (0, 1, 8):
+                digit_check = 0  # same number
+            elif digit in (2, 5, 6, 9):
+                digit_check = 1  # good number
+            else:
+                memo_arr[i] = 2  # invalid case
+                continue
 
-            res = 0
-            # determine the upper bound for the current digit
-            limit = int(s[idx]) if not is_less else 9
+            if remaining_part == 0 and digit_check == 0:
+                memo_arr[i] = 0
+            else:
+                memo_arr[i] = 1
 
-            for d in range(limit + 1):
-                # rule 1: skip invalid digits
-                if d in (3, 4, 7):
-                    continue
+            if memo_arr[i] == 1:
+                count += 1
 
-                # rule 2: track if the number have a "transformer" digit
-                new_has_changed = has_changed or (d in (2, 5, 6, 9))
-
-                # rule 3: update the 'is_less' constraint
-                new_is_less = is_less or (d < limit)
-
-                res += dp(idx + 1, new_is_less, new_has_changed)
-
-            memo[state] = res
-            return res
-
-        return dp(0, False, False)
+        return count
