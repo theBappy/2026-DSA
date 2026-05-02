@@ -9,6 +9,7 @@ class Solution:
                 digit = check % 10
                 if digit in (3, 4, 7):
                     is_valid = False
+                    break
                 elif digit in (2, 5, 6, 9):
                     has_changed = True
                 check //= 10
