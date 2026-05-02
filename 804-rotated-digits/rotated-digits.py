@@ -1,14 +1,12 @@
 class Solution:
     def rotatedDigits(self, n: int) -> int:
-        def isGoodNumber(i: int) -> bool:
-            isRotated = False
-            for c in str(i):
-                if c == "0" or c == "1" or c == "8":
-                    continue
-                if c == "2" or c == "5" or c == "6" or c == "9":
-                    isRotated = True
-                else:
-                    return False
-            return isRotated
-
-        return sum(isGoodNumber(i) for i in range(1, n + 1))
+        count = 0
+        for i in range(1, n + 1):
+            s = str(i)
+            # must not have 3,4,7
+            if any(d in s for d in "347"):
+                continue
+            # must have at least one of 2,5,6,9
+            if any(d in s for d in "2569"):
+                count += 1
+        return count
