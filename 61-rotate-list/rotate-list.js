@@ -1,30 +1,30 @@
 var rotateRight = function (head, k) {
-    if (!head || !head.next || k === 0) return head
-
-    //calculate length and find the current tail
-    let lastNode = head
-    let n = 1
-    while (lastNode.next) {
-        lastNode = lastNode.next
-        n++
+    if (!head || !head.next || k == 0) {
+        return head
     }
 
-    //connect tail to head make it circular
-    lastNode.next = head
+    let length = 1
+    let tail = head
+    while (tail.next) {
+        tail = tail.next
+        length++
+    }
 
-    //find the new tail
-    //the new tail is at (n-(k % n)-1) steps from current head
-    k = k % n
-    let stepsToNewTail = n - k - 1
+    k = k % length
+    if (k === 0) {
+        return head
+    }
+
+    tail.next = head
+    const steps = length - k
     let newTail = head
-    for (let i = 0; i < stepsToNewTail; i++) {
+    for (let i = 1; i < steps; i++) {
         newTail = newTail.next
     }
 
-    //break the circle
-    let newHead = newTail.next
+    newHead = newTail.next
     newTail.next = null
 
-
     return newHead
+
 };
