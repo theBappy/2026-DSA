@@ -1,14 +1,15 @@
-/**
- * @param {number[]} nums
- * @param {number} k
- * @return {void} Do not return anything, modify nums in-place instead.
- */
-var rotate = function (nums, k) {
-    k = k % nums.length
-    if (k !== 0) {
-        let temp = nums.slice(-k).concat(nums.slice(0, -k))
-        for (let i = 0; i < nums.length; i++) {
-            nums[i] = temp[i]
+var rotate = function(nums, k) {
+    const n = nums.length
+    k = k % n
+    
+    const reverse = (left, right) => {
+        while(left < right){
+            [nums[left], nums[right]] = [nums[right], nums[left]]
+            left++
+            right--
         }
     }
+    reverse(0, n-1)
+    reverse(0, k-1)
+    reverse(k, n-1)
 };
