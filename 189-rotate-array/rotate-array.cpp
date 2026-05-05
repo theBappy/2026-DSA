@@ -1,9 +1,6 @@
-#include <vector>
-#include <algorithm>
-
 class Solution {
 public:
-    void rotate(std::vector<int>& nums, int k) {
+    void rotate(vector<int>& nums, int k) {
         k %= nums.size();
 
         auto reverse = [&](int left, int right) {
