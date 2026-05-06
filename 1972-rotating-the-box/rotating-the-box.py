@@ -1,24 +1,21 @@
 class Solution:
     def rotateTheBox(self, box: List[List[str]]) -> List[List[str]]:
-        m = len(box)
-        n = len(box[0])
+        m, n = len(box), len(box[0])
 
-        # rotate 90 degree clockwise by transpose and reverse
-        res = list(map(list, zip(*box[::-1])))
+        # initialize result matrix with the new dimensions (n x m)
+        res = [["." for _ in range(m)] for _ in range(n)]
 
-        new_rows = n
-        new_cols = m
-
-        # apply gravity
-        for j in range(new_cols):
-            lowest_empty_space = new_rows - 1
-            for i in range(new_rows - 1, -1, -1):
-                if res[i][j] == "*":
-                    lowest_empty_space = i - 1
-                elif res[i][j] == "#":
-                    # move stone to lowest empty space
-                    res[i][j] = "."
-                    res[lowest_empty_space][j] = "#"
+        for i in range(m):
+            # apply gravity to the row horizontally (right side is the "bottom")
+            lowest_empty_space = n - 1
+            for j in range(n - 1, -1, -1):
+                if box[i][j] == "*":
+                    # obstacle stays put, but we map its rotated position
+                    res[j][m - 1 - i] = "*"
+                    lowest_empty_space = j - 1
+                elif box[i][j] == "#":
+                    # stone moves to the rightmost empty spot
+                    res[lowest_empty_space][m - 1 - i] = "#"
                     lowest_empty_space -= 1
-
+            # empty spaces '.' are already handled by the res initialization
         return res
