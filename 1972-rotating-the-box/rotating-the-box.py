@@ -3,32 +3,22 @@ class Solution:
         m = len(box)
         n = len(box[0])
 
-        result = [[None] * m for _ in range(n)]
+        # rotate 90 degree clockwise by transpose and reverse
+        res = list(map(list, zip(*box[::-1])))
 
-        # Transpose
-        for i in range(n):
-            for j in range(m):
-                result[i][j] = box[j][i]
+        new_rows = n
+        new_cols = m
 
-        # Reverse each row for 90 degree rotation
-        for row in result:
-            row.reverse()
+        # apply gravity
+        for j in range(new_cols):
+            lowest_empty_space = new_rows - 1
+            for i in range(new_rows - 1, -1, -1):
+                if res[i][j] == "*":
+                    lowest_empty_space = i - 1
+                elif res[i][j] == "#":
+                    # move stone to lowest empty space
+                    res[i][j] = "."
+                    res[lowest_empty_space][j] = "#"
+                    lowest_empty_space -= 1
 
-        # Apply gravity
-        for j in range(m):
-            for i in range(n - 1, -1, -1):
-                if result[i][j] == '.':  # if it is a space
-                    stoneRow = -1
-
-                    for k in range(i - 1, -1, -1):
-                        if result[k][j] == '*':
-                            break
-                        elif result[k][j] == '#':
-                            stoneRow = k
-                            break
-
-                    if stoneRow != -1:
-                        result[i][j] = '#'
-                        result[stoneRow][j] = '.'
-
-        return result
+        return res
