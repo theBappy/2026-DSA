@@ -1,15 +1,14 @@
 class Solution:
     def maximumJumps(self, nums: List[int], target: int) -> int:
-        n = len(nums)
+        @cache
+        def dfs(i):
+            if i == 0:
+                return 0
+            ans = -inf
+            for j in range(i):
+                if abs(nums[j] - nums[i]) <= target:
+                    ans = max(ans, 1 + dfs(j))
+            return ans
 
-        dp = [-1] * n
-        dp[0] = 0
-
-        for i in range(n):
-            if dp[i] == -1:
-                continue
-            for j in range(i + 1, n):
-                diff = nums[j] - nums[i]
-                if -target <= diff <= target:
-                    dp[j] = max(dp[j], dp[i] + 1)
-        return dp[-1]
+        ans = dfs(len(nums) - 1)
+        return -1 if ans < 0 else ans
