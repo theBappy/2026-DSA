@@ -1,18 +1,15 @@
 var maximumJumps = function (nums, target) {
     const n = nums.length
-    let dp = new Array(n).fill(-1)
-    dp[0] = 0
+    let t = new Array(n + 1).fill(-1)
+    t[n - 1] = 0
 
-    for (let i = 0; i < n; i++) {
-        if (dp[i] === -1) {
-            continue
-        }
+    for (let i = n - 2; i >= 0; i--) {
         for (let j = i + 1; j < n; j++) {
-            diff = nums[j] - nums[i]
-            if (diff >= - target && diff <= target) {
-                dp[j] = Math.max(dp[j], dp[i] + 1)
+            if (Math.abs(nums[j] - nums[i]) <= target && t[j] !== -1) {
+                let temp = 1 + t[j]
+                t[i] = Math.max(t[i], temp)
             }
         }
     }
-    return dp[n-1]
+    return t[0] < 0 ? -1 : t[0]
 };
