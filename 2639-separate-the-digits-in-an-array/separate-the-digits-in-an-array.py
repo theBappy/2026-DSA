@@ -1,8 +1,8 @@
-class Solution:
-    def separateDigits(self, nums: List[int]) -> List[int]:
+class Solution(object):
+    def separateDigits(self, nums):
         res_arr = []
-        for n in reversed(nums):
-            while n:
-                res_arr.append(n % 10)
-                n //= 10
-        return list(reversed(res_arr))
+        for n in nums:
+            for digit in str(n):
+                res_arr.append(int(digit))
+        return res_arr
+        
