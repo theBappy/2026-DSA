@@ -1,41 +1,19 @@
 class Solution {
 public:
-    bool doAble(vector<vector<int>>& tasks, int mid){
-        for(auto &task: tasks){
-            int actualEneryNeeds = task[0];
-            int minEnergyNeeds = task[1];
-
-            if(minEnergyNeeds > mid){
-                return false;
-            }
-            mid -= actualEneryNeeds;
-        }
-        return true;
-    }
     int minimumEffort(vector<vector<int>>& tasks) {
-        int n = tasks.size();
-        int left = 0;
-        int right = 1e9;
-        int result = INT_MAX;
+        // Sort by difference (min - actual) descending
+        sort(tasks.begin(), tasks.end(),
+             [](vector<int>& task1, vector<int>& task2) {
+                 return (task1[1] - task1[0]) > (task2[1] - task2[0]);
+             });
 
-        auto lambda = [](auto &task1, auto &task2){
-            int diff1 = task1[1]-task1[0];
-            int diff2 = task2[1]-task2[0];
+        int total_needed = 0;
+        int current_spent = 0;
 
-            return diff1 > diff2;
-        };
-
-        sort(begin(tasks), end(tasks), lambda);
-
-        while(left <= right){
-            int mid = left + (right - left)/2;
-            if(doAble(tasks, mid)){
-                result = mid;
-                right = mid-1;
-            }else{
-                left = mid+1;
-            }
+        for (auto& task : tasks) {
+            total_needed = max(total_needed, current_spent + task[1]);
+            current_spent += task[0];
         }
-        return result;
+        return total_needed;
     }
 };
