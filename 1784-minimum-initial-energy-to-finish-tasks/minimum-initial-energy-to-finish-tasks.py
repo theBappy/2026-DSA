@@ -1,27 +1,16 @@
 class Solution:
-    def doAble(self, tasks: List[List[int]], mid: int) -> bool:
-        for task in tasks:
-            actualEnergyNeed = task[0]
-            minEnergyNeed = task[1]
-
-            if mid < minEnergyNeed:
-                return False
-
-            mid -= actualEnergyNeed
-        return True
-
     def minimumEffort(self, tasks: List[List[int]]) -> int:
-        left, right = 0, int(1e9)
-        result = float("inf")
-
+        # sort by 'requirement gap' descending(greedily approach)
         tasks.sort(key=lambda task: task[1] - task[0], reverse=True)
 
-        while left <= right:
-            mid = left + (right - left) // 2
-            if self.doAble(tasks, mid):
-                result = mid
-                right = mid - 1
-            else:
-                left = mid + 1
+        ans = 0
+        current_sum = 0
 
-        return result
+        for actual, minimum in tasks:
+            # we need minimum energy right now, already spent current_sum from our initial tank, so initital tank must be atleast current_sum+minimum
+            ans = max(ans, current_sum + minimum)
+
+            # keep track of total energy consumed so far
+            current_sum += actual
+
+        return ans
