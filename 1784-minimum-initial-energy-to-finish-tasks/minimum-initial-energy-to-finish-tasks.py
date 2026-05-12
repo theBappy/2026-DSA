@@ -1,16 +1,13 @@
 class Solution:
     def minimumEffort(self, tasks: List[List[int]]) -> int:
-        # sort by 'requirement gap' descending(greedily approach)
-        tasks.sort(key=lambda task: task[1] - task[0], reverse=True)
+        # Sort by (minimum - actual) descending
+        tasks.sort(key=lambda x: x[1] - x[0], reverse=True)
 
-        ans = 0
-        current_sum = 0
+        total_needed = 0
+        current_spent = 0
 
         for actual, minimum in tasks:
-            # we need minimum energy right now, already spent current_sum from our initial tank, so initital tank must be atleast current_sum+minimum
-            ans = max(ans, current_sum + minimum)
+            total_needed = max(total_needed, current_spent + minimum)
+            current_spent += actual
 
-            # keep track of total energy consumed so far
-            current_sum += actual
-
-        return ans
+        return total_needed
