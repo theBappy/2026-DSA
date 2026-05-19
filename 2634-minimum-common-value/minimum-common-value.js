@@ -1,7 +1,21 @@
 var getCommon = function (nums1, nums2) {
-    const set1 = new Set(nums1)
-    for (const num of nums2) {
-        if (set1.has(num)) {
+    function binarySearch(target, nums) {
+        let left = 0
+        let right = nums.length - 1
+        while (left <= right) {
+            const mid = left + Math.floor((right - left) / 2);
+            if (nums[mid] === target) {
+                return true
+            } else if (nums[mid] < target) {
+                left = mid + 1
+            } else {
+                right = mid - 1
+            }
+        }
+        return false
+    }
+    for (const num of nums1) {
+        if (binarySearch(num, nums2)) {
             return num
         }
     }
