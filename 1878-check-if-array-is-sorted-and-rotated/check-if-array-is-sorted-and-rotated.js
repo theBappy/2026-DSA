@@ -1,18 +1,13 @@
 var check = function (nums) {
     const n = nums.length
-    const sortedArr = [...nums].sort((a, b) => a - b)
+    let peak = 0
 
-    for (let r = 0; r < n; r++) {
-        isRotated = true
-        for (let i = 0; i < n; i++) {
-            if (sortedArr[i] !== nums[(i + r) % n]) {
-                isRotated = false
-                break
-            }
-        }
-        if (isRotated) {
-            return true
+    for (let i = 0; i < n; i++) {
+        // use modulo to check the next element, wrapping around at the boundary
+        if (nums[i] > nums[(i + 1) % n]) {
+            peak++
         }
     }
-    return false
+    // returns true if there is 0 or 1 drop; false otherwise
+    return peak <= 1
 };
