@@ -1,27 +1,28 @@
+from functools import lru_cache
+
 class Solution:
     def maxJumps(self, arr: list[int], d: int) -> int:
         n = len(arr)
-        # dp[i] will store the maximum jumps starting from index i
-        dp = [1] * n
         
-        # pair each value with its index and sort by value ascending
-        # this ensures we process smaller heights first
-        sorted_elements = sorted([(val, i) for i, val in enumerate(arr)])
-        
-        for val, i in sorted_elements:
-            # move Left: check up to d steps back
+        # @lru_cache handles the memoization table automatically
+        @lru_cache(None)
+        def dfs(i: int) -> int:
+            max_child_jumps = 0
+            
+            # look Left
             for j in range(i - 1, max(-1, i - d - 1), -1):
-                # break: can't jump over or onto a taller/equal building
-                if arr[j] >= arr[i]:
+                if arr[j] >= arr[i]:  # blocked by a taller/equal building
                     break
-                dp[i] = max(dp[i], 1 + dp[j])
+                max_child_jumps = max(max_child_jumps, dfs(j))
                 
-            # move Right: check up to d steps forward
+            # look Right
             for j in range(i + 1, min(n, i + d + 1)):
-                # break: can't jump over or onto a taller/equal building
-                if arr[j] >= arr[i]:
+                if arr[j] >= arr[i]:  # blocked by a taller/equal building
                     break
-                dp[i] = max(dp[i], 1 + dp[j])
+                max_child_jumps = max(max_child_jumps, dfs(j))
                 
-        # the answer is the maximum value found in our DP array
-        return max(dp)
+            # total jumps from here is 1 (current building) + best path from children
+            return 1 + max_child_jumps
+
+        # try starting from every possible index and find the maximum
+        return max(dfs(i) for i in range(n))
