@@ -6,16 +6,15 @@ class Solution:
         waterStartTime: List[int],
         waterDuration: List[int],
     ) -> int:
-        n = len(landStartTime)
-        m = len(waterStartTime)
-        res = inf
-        for i in range(n):
-            for j in range(m):
-                land = landStartTime[i] + landDuration[i]
-                land_water = max(land, waterStartTime[j]) + waterDuration[j]
-                res = min(res, land_water)
+        def solve(start1, duration1, start2, duration2):
+            finish1 = inf
+            for i in range(len(start1)):
+                finish1 = min(finish1, start1[i] + duration1[i])
+            finish2 = inf
+            for i in range(len(start2)):
+                finish2 = min(finish2, max(start2[i], finish1) + duration2[i])
+            return finish2
 
-                water = waterStartTime[j] + waterDuration[j]
-                water_land = max(water, landStartTime[i]) + landDuration[i]
-                res = min(res, water_land)
-        return res
+        land_water = solve(landStartTime, landDuration, waterStartTime, waterDuration)
+        water_land = solve(waterStartTime, waterDuration, landStartTime, landDuration)
+        return min(land_water, water_land)
