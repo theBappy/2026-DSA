@@ -1,35 +1,24 @@
-var earliestFinishTime = function (
-    landStartTime,
-    landDuration,
-    waterStartTime,
-    waterDuration,
-) {
-    function solve(start1, duration1, start2, duration2) {
-        let finish1 = Infinity;
-        for (let i = 0; i < start1.length; i++) {
-            finish1 = Math.min(finish1, start1[i] + duration1[i]);
+var earliestFinishTime = function(landStartTime, landDuration, waterStartTime, waterDuration) {
+    
+    const getMinSequentialFinish = (startFirst, durationFirst, startSecond, durationSecond) => {
+        // Phase 1: Find the earliest completion time for the first activity
+        let earliestFirstFinish = Infinity;
+        for (let i = 0; i < startFirst.length; i++) {
+            earliestFirstFinish = Math.min(earliestFirstFinish, startFirst[i] + durationFirst[i]);
         }
-        let finish2 = Infinity;
-        for (let i = 0; i < start2.length; i++) {
-            finish2 = Math.min(
-                finish2,
-                Math.max(start2[i], finish1) + duration2[i],
-            );
-        }
-        return finish2;
-    }
 
-    let land_water = solve(
-        landStartTime,
-        landDuration,
-        waterStartTime,
-        waterDuration,
-    );
-    let water_land = solve(
-        waterStartTime,
-        waterDuration,
-        landStartTime,
-        landDuration,
-    );
-    return Math.min(land_water, water_land);
+        // Phase 2: Find the earliest completion time for the second activity
+        let earliestSecondFinish = Infinity;
+        for (let i = 0; i < startSecond.length; i++) {
+            let actualStartTime = Math.max(startSecond[i], earliestFirstFinish);
+            earliestSecondFinish = Math.min(earliestSecondFinish, actualStartTime + durationSecond[i]);
+        }
+
+        return earliestSecondFinish;
+    };
+
+    const landThenWater = getMinSequentialFinish(landStartTime, landDuration, waterStartTime, waterDuration);
+    const waterThenLand = getMinSequentialFinish(waterStartTime, waterDuration, landStartTime, landDuration);
+
+    return Math.min(landThenWater, waterThenLand);
 };
