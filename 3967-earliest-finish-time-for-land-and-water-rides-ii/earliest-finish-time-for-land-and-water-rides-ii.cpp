@@ -1,27 +1,33 @@
 class Solution {
-    int solve(vector<int>& start1, vector<int>& duration1, vector<int>& start2,
-              vector<int>& duration2) {
-        int finish1 = INT_MAX;
-        for (int i = 0; i < start1.size(); i++) {
-            finish1 = min(finish1, start1[i] + duration1[i]);
+private:
+    long long getMinSequentialFinish(
+        vector<int>& startFirst, vector<int>& durationFirst,
+        vector<int>& startSecond, vector<int>& durationSecond
+    ) {
+        // Phase 1: Find the earliest completion time for the first activity
+        long long earliestFirstFinish = LLONG_MAX;
+        for (size_t i = 0; i < startFirst.size(); ++i) {
+            earliestFirstFinish = min(earliestFirstFinish, (long long)startFirst[i] + durationFirst[i]);
         }
 
-        int finish2 = INT_MAX;
-        for (int i = 0; i < start2.size(); i++) {
-            finish2 = min(finish2, max(start2[i], finish1) + duration2[i]);
+        // Phase 2: Find the earliest completion time for the second activity
+        long long earliestSecondFinish = LLONG_MAX;
+        for (size_t i = 0; i < startSecond.size(); ++i) {
+            long long actualStartTime = max((long long)startSecond[i], earliestFirstFinish);
+            earliestSecondFinish = min(earliestSecondFinish, actualStartTime + durationSecond[i]);
         }
-        return finish2;
+
+        return earliestSecondFinish;
     }
 
 public:
-    int earliestFinishTime(vector<int>& landStartTime,
-                           vector<int>& landDuration,
-                           vector<int>& waterStartTime,
-                           vector<int>& waterDuration) {
-        int land_water =
-            solve(landStartTime, landDuration, waterStartTime, waterDuration);
-        int water_land =
-            solve(waterStartTime, waterDuration, landStartTime, landDuration);
-        return min(land_water, water_land);
+    int earliestFinishTime(
+        vector<int>& landStartTime, vector<int>& landDuration,
+        vector<int>& waterStartTime, vector<int>& waterDuration
+    ) {
+        long long landThenWater = getMinSequentialFinish(landStartTime, landDuration, waterStartTime, waterDuration);
+        long long waterThenLand = getMinSequentialFinish(waterStartTime, waterDuration, landStartTime, landDuration);
+        
+        return min(landThenWater, waterThenLand);
     }
 };
