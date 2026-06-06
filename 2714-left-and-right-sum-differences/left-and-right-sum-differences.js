@@ -1,18 +1,14 @@
 var leftRightDifference = function (nums) {
-    const n = nums.length
-    const ans = new Array(n)
+    const sum = nums.reduce((acc, val) => acc + val, 0)
+    const result = new Array(nums.length)
 
-    let leftSum = 0
-    for (let i = 0; i < n; i++) {
-        ans[i] = leftSum;
-        leftSum += nums[i];
+    let curr = 0
+    for (let i = 0; i < nums.length; i++) {
+        const leftSum = curr
+        curr += nums[i]
+        const rightSum = sum - curr
+        result[i] = Math.abs(rightSum - leftSum)
     }
-
-    let rightSum = 0;
-    for (let i = n - 1; i >= 0; i--) {
-        ans[i] = Math.abs(ans[i] - rightSum)
-        rightSum += nums[i]
-    }
-
-    return ans
+    
+    return result
 };
