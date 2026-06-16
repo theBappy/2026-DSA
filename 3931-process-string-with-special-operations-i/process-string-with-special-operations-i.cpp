@@ -2,7 +2,7 @@ class Solution {
 public:
     string processStr(string s) {
         vector<char> result;
-        for (char& ch : s) {
+        for (char ch : s) {
             if (islower(ch)) {
                 result.push_back(ch);
             } else if (ch == '*') {
